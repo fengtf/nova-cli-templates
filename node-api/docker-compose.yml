@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  # API 服务
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node-api-template
+    restart: unless-stopped
+    ports:
+      - "3050:80"
+    environment:
+      - SERVER_PORT=80
+      - CURRENT_ENV=prod
+      - JWT_SECRET=${JWT_SECRET:-development-secret-key}
+      - JWT_EXPIRES_IN=2h
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - app-network
+    volumes:
+      # 挂载配置文件（可选）
+      - ./src/config/config.json:/usr/app/src/config/config.json:ro
+      # 挂载日志目录（可选）
+      # - ./logs:/usr/app/logs
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # MongoDB 数据库
+  mongodb:
+    image: mongo:7
+    container_name: node-api-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGODB_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGODB_PASSWORD:-password}
+      - MONGO_INITDB_DATABASE=${MONGODB_DATABASE:-node-template}
+    volumes:
+      - mongodb-data:/data/db
+      - mongodb-config:/data/configdb
+    networks:
+      - app-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis 缓存
+  redis:
+    image: redis:7-alpine
+    container_name: node-api-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD:-password}
+    volumes:
+      - redis-data:/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MongoDB Express (可选，用于管理 MongoDB)
+  mongo-express:
+    image: mongo-express:latest
+    container_name: node-api-mongo-express
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGODB_USERNAME:-admin}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGODB_PASSWORD:-password}
+      - ME_CONFIG_MONGODB_URL=mongodb://${MONGODB_USERNAME:-admin}:${MONGODB_PASSWORD:-password}@mongodb:27017/
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_EXPRESS_USERNAME:-admin}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_EXPRESS_PASSWORD:-admin}
+    depends_on:
+      - mongodb
+    networks:
+      - app-network
+
+  # Redis Commander (可选，用于管理 Redis)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: node-api-redis-commander
+    restart: unless-stopped
+    ports:
+      - "8082:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379:0:${REDIS_PASSWORD:-password}
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongodb-data:
+    driver: local
+  mongodb-config:
+    driver: local
+  redis-data:
+    driver: local
