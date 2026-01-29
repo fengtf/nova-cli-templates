@@ -1,7 +1,7 @@
 {
-  "name": "node-api-template",
+  "name": "<%= projectName %>",
   "version": "1.0.0",
-  "description": "Node.js API 通用模板 - 基于 Koa + TypeScript 的企业级后端服务模板",
+  "description": "<%= description %>",
   "_moduleAliases": {
     "@root": ".",
     "@": "./src"
