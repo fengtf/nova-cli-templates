@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: __CI_PROJECT_PATH_SLUG__-__CI_ENVIRONMENT_SLUG__
+  labels:
+    app: __CI_PROJECT_PATH_SLUG__
+    ref: __CI_ENVIRONMENT_SLUG__
+    track: stable
+  annotations:
+    app.gitlab.com/app: __CI_PROJECT_PATH_SLUG__
+    app.gitlab.com/env: __CI_ENVIRONMENT_SLUG__
+spec:
+  replicas: __REPLICAS__
+  selector:
+    matchLabels:
+      app: __CI_PROJECT_PATH_SLUG__
+      ref: __CI_ENVIRONMENT_SLUG__
+  template:
+    metadata:
+      labels:
+        app: __CI_PROJECT_PATH_SLUG__
+        ref: __CI_ENVIRONMENT_SLUG__
+        track: stable
+      annotations:
+        app.gitlab.com/app: ${CI_PROJECT_PATH_SLUG}
+        app.gitlab.com/env: ${CI_ENVIRONMENT_SLUG}
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      containers:
+        - name: __CI_PROJECT_PATH_SLUG__
+          image: __CI_REGISTRY_REPO_URL__/__CI_PROJECT_ROOT_NAMESPACE__/__CI_PROJECT_PATH_SLUG__:__TAG__ # 前面是镜像的地址
+          volumeMounts:
+            - name: <%= projectName %>
+              mountPath: '/usr/app/src/config/config.json'
+              subPath: config.json
+              readOnly: true
+          resources:
+            requests:
+              cpu: 0.1
+              memory: 512Mi
+            limits:
+              cpu: 0.2
+              memory: 1024Mi
+          ports:
+            - name: web
+              protocol: TCP
+              containerPort: 80
+      volumes:
+        - name: <%= projectName %>
+          secret:
+            secretName: <%= projectName %>
+            items:
+              - key: config.json
+                path: config.json
