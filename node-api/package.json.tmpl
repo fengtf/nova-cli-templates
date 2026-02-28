@@ -7,8 +7,8 @@
     "@": "./src"
   },
   "scripts": {
-    "start:dev": "cross-env CURRENT_ENV=dev nodemon  ./src/index.ts ",
-    "start:prod": "cross-env CURRENT_ENV=prod ts-node ./src/index.ts"
+    "dev": "cross-env CURRENT_ENV=dev nodemon  ./src/index.ts ",
+    "prod": "cross-env CURRENT_ENV=prod ts-node ./src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "resolutions": {
+    "@types/koa": "2.15.0"
+  },
   "dependencies": {
     "@types/uuid": "^10.0.0",
     "axios": "^1.7.7",
@@ -41,8 +44,10 @@
     "@types/koa": "^2.13.4",
     "@types/koa-router": "^7.4.4",
     "@types/koa2-cors": "^2.0.2",
+    "@types/node": "^25.3.2",
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.0",
-    "module-alias": "^2.2.3"
+    "module-alias": "^2.2.3",
+    "typescript": "^5.9.3"
   }
 }

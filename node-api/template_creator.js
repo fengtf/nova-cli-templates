@@ -1,3 +1,3 @@
 module.exports = {
-  desc: 'Node.js API 通用模板'
+  desc: 'Node.js API 通用模板',
 }
