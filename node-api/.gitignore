@@ -15,10 +15,10 @@ build/
 *.tsbuildinfo
 
 # 环境变量（保留示例文件）
-.env.development
-.env.production
-.env.test
-!.env.example
+# .env.development
+# .env.production
+# .env.test
+# !.env.example
 
 # 配置文件（保留示例文件）
 src/config/config.json
