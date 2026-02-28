@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken';
 import { Context, Next } from 'koa';
 import { secret, expiresIn } from '@/config/config.json';
 import Resolve from '@/lib/helper';
-import { getLoginUrl } from '@/core/oidc';
 
 const res = new Resolve();
 
@@ -28,13 +27,15 @@ export const autoRefreshToken = async (ctx: Context, next: Next) => {
         );
         ctx.set('Authorization', `Bearer ${newToken}`); // 将新的JWT设置在响应头中
       }
-      ctx.state.user = decoded;
+      ctx.state.user = decoded as any;
     } catch (error) {
       // 如果JWT无效或过期，返回401错误
       ctx.status = 401;
       // ctx.redirect(url);
       ctx.body = res.fail(
-        { jumpUrl: getLoginUrl() },
+        { jumpUrl: ()=>{
+          // TODO: 跳转登录页面
+        } },
         '登录已过期，请重新登录',
         10002
       );
@@ -43,7 +44,9 @@ export const autoRefreshToken = async (ctx: Context, next: Next) => {
   } else {
     ctx.status = 401;
     ctx.body = res.fail(
-      { jumpUrl: getLoginUrl() },
+      { jumpUrl: ()=>{
+        // TODO: 跳转登录页面
+      } },
       'Authorization不能为空',
       10002
     );
