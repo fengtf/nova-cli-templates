@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: __CI_PROJECT_PATH_SLUG__-__CI_ENVIRONMENT_SLUG__
+  labels:
+    app: __CI_PROJECT_PATH_SLUG__
+    ref: __CI_ENVIRONMENT_SLUG__
+    track: stable
+  annotations:
+    app.gitlab.com/app: __CI_PROJECT_PATH_SLUG__
+    app.gitlab.com/env: __CI_ENVIRONMENT_SLUG__
+spec:
+  replicas: __REPLICAS__
+  selector:
+    matchLabels:
+      app: __CI_PROJECT_PATH_SLUG__
+      ref: __CI_ENVIRONMENT_SLUG__
+  template:
+    metadata:
+      labels:
+        app: __CI_PROJECT_PATH_SLUG__
+        ref: __CI_ENVIRONMENT_SLUG__
+        track: stable
+      annotations:
+        app.gitlab.com/app: ${CI_PROJECT_PATH_SLUG}
+        app.gitlab.com/env: ${CI_ENVIRONMENT_SLUG}
+    spec:
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+        - name: default-conf
+          configMap:
+            name: nginx
+            items:
+              - key: nginx-vue.conf
+                path: default.conf
+      containers:
+      - name: __CI_PROJECT_PATH_SLUG__
+        image: __CI_REGISTRY_REPO_URL__/__CI_PROJECT_ROOT_NAMESPACE__/__CI_PROJECT_PATH_SLUG__:__TAG__ # 前面是镜像的地址
+        volumeMounts:
+          - name: default-conf
+            mountPath: /etc/nginx/conf.d
+        resources:
+          requests:
+              cpu: 0.25
+              memory: 256Mi
+          limits:
+              cpu: 0.5
+              memory: 512Mi
+        ports:
+        - name: web
+          protocol: TCP
+          containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 3
+          timeoutSeconds: 2
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 3
+          timeoutSeconds: 2

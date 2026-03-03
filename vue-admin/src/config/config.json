@@ -1,0 +1,32 @@
+{
+  "dev": {
+    "client_id": "9c8c563a-d1b1-450a-9afb-fcb8fd75f41b",
+    "account": "account-askaway.develenv.com",
+    "domain": "console-askaway.develenv.com",
+    "cdn": "rs.develenv.com",
+    "onedrive_client_id": "3fd0b525-b8f2-4560-8e26-c2060c19ca5a",
+    "onedrive_scope": "https://graph.microsoft.com/Files.Read https://graph.microsoft.com/Files.Read.All offline_access",
+    "onedrive_authority": "https://login.microsoftonline.com/common",
+    "msalClientId": "3fd0b525-b8f2-4560-8e26-c2060c19ca5a"
+  },
+  "beta": {
+    "client_id": "c5c58801-f6ca-49b0-b6e8-b936ac337b95",
+    "account": "account-askaway.betaenv.com",
+    "domain": "console-askaway.betaenv.com",
+    "cdn": "rs.develenv.com",
+    "onedrive_client_id": "a1cb63ca-015e-4793-82b6-11bacaa29158",
+    "onedrive_scope": "https://graph.microsoft.com/Files.Read https://graph.microsoft.com/Files.Read.All offline_access",
+    "onedrive_authority": "https://login.microsoftonline.com/common",
+    "msalClientId": "a1cb63ca-015e-4793-82b6-11bacaa29158"
+  },
+  "prod": {
+    "client_id": "3cfb9e6e-5a36-4c4b-8c70-7a3b6055b94f",
+    "account": "account.askaway.chat",
+    "domain": "console.askaway.chat",
+    "cdn": "rs.askaway.chat",
+    "onedrive_client_id": "36d6271d-56a6-4dc1-9068-76df056fd274",
+    "onedrive_scope": "https://graph.microsoft.com/Files.Read https://graph.microsoft.com/Files.Read.All offline_access",
+    "onedrive_authority": "https://login.microsoftonline.com/common",
+    "msalClientId": "36d6271d-56a6-4dc1-9068-76df056fd274"
+  }
+}

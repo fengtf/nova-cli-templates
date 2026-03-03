@@ -1,0 +1,191 @@
+pipelines:
+  branches:
+    dev:
+      - step:
+          name: release
+          image: docker
+          runs-on:
+            - txoverseak8s
+          script:
+            - export auth_url=$(echo $template_url |base64 -d) 
+            - export CDN_URL_PREFIX="//${CI_CDN_HOST_TEST}/${BITBUCKET_REPO_SLUG}-assets/${BITBUCKET_BUILD_NUMBER}"
+            - git clone ${auth_url}
+            - chmod +x ci-template/v/build-customize
+            - ./ci-template/v/build-customize
+          artifacts:
+            - dist/**
+      - step:
+          name: cos
+          image: 
+            name: harbor.zlibs.com/library/library-cos-uploader:v2.0.0
+            username: $CI_REGISTRY_USERNAME
+            password: $CI_REGISTRY_PASSWORD
+          runs-on:
+            - txtestk8s
+          script:
+            - export CI_COS_REGION=${CI_COS_REGION_TEST}  CI_COS_BUCKET=${CI_COS_BUCKET_TEST}  CI_CDN_HOST=${CI_CDN_HOST_TEST}
+            - export  BITBUCKET_PROJECT_NAME=$(echo $BITBUCKET_PROJECT_KEY | tr '[A-Z]' '[a-z]'|cut -d '_' -f 1)  PROJECT_GROUP=$(echo $BITBUCKET_PROJECT_KEY | tr '[A-Z]' '[a-z]'|cut -d '_' -f 2)
+            - export  kube_project_namespace=ci-${BITBUCKET_PROJECT_NAME}-${CI_ENVIRONMENT_SLUG}   CI_PROJECT_PATH_SLUG=${BITBUCKET_PROJECT_NAME}-${PROJECT_GROUP}-${BITBUCKET_REPO_SLUG}  CI_PIPELINE_ID=${BITBUCKET_BUILD_NUMBER}
+            - test -z "${CI_PROJECT_PATH_SLUG_OTHER}" && export  CI_PROJECT_PATH_SLUG_OTHER="${CI_PROJECT_PATH_SLUG}"
+            - cos-uploader ${BITBUCKET_REPO_SLUG}-assets
+            - coscmd upload -rs dist/ /${BITBUCKET_REPO_SLUG}-assets/${BITBUCKET_BUILD_NUMBER}
+            - echo "done"
+      - step:
+          name: deploy-dev
+          image: harbor.zlibs.com/bitnami/kubectl
+          runs-on:
+            - txtestk8s
+          script:
+            - export DEPLOY_FILE_NAME=deployment CI_ENVIRONMENT_SLUG=dev K8S_REPLICAS=1 PROJECT_ISP=tx
+            - export auth_url=$(echo $template_url |base64 -d)
+            - git clone ${auth_url}
+            - chmod +x ci-template/v/deploy/deploy
+            - ./ci-template/v/deploy/deploy
+
+      - step:
+          trigger: manual
+          name: deploy-dev-service
+          image: harbor.zlibs.com/bitnami/kubectl
+          runs-on:
+            - txtestk8s
+          script:
+            - export  CI_ENVIRONMENT_SLUG=dev PROJECT_ISP=tx
+            - export auth_url=$(echo $template_url |base64 -d)
+            - git clone ${auth_url}
+            - chmod +x ci-template/v/deploy/service
+            - ./ci-template/v/deploy/service
+    main:
+      - step:
+          name: release
+          image: docker
+          runs-on:
+            - txoverseak8s
+          script:
+            - export auth_url=$(echo $template_url |base64 -d) 
+            - export CDN_URL_PREFIX="//${CI_CDN_HOST_TEST}/${BITBUCKET_REPO_SLUG}-assets/${BITBUCKET_BUILD_NUMBER}"
+            - git clone ${auth_url}
+            - chmod +x ci-template/v/build-customize
+            - ./ci-template/v/build-customize
+          artifacts:
+            - dist/**
+      - step:
+          name: cos
+          image: 
+            name: harbor.zlibs.com/library/library-cos-uploader:v2.0.0
+            username: $CI_REGISTRY_USERNAME
+            password: $CI_REGISTRY_PASSWORD
+          runs-on:
+            - txtestk8s
+          script:
+            - export CI_COS_REGION=${CI_COS_REGION_TEST}  CI_COS_BUCKET=${CI_COS_BUCKET_TEST}  CI_CDN_HOST=${CI_CDN_HOST_TEST}
+            - export  BITBUCKET_PROJECT_NAME=$(echo $BITBUCKET_PROJECT_KEY | tr '[A-Z]' '[a-z]'|cut -d '_' -f 1)  PROJECT_GROUP=$(echo $BITBUCKET_PROJECT_KEY | tr '[A-Z]' '[a-z]'|cut -d '_' -f 2)
+            - export  kube_project_namespace=ci-${BITBUCKET_PROJECT_NAME}-${CI_ENVIRONMENT_SLUG}   CI_PROJECT_PATH_SLUG=${BITBUCKET_PROJECT_NAME}-${PROJECT_GROUP}-${BITBUCKET_REPO_SLUG}  CI_PIPELINE_ID=${BITBUCKET_BUILD_NUMBER}
+            - test -z "${CI_PROJECT_PATH_SLUG_OTHER}" && export  CI_PROJECT_PATH_SLUG_OTHER="${CI_PROJECT_PATH_SLUG}"
+            - cos-uploader ${BITBUCKET_REPO_SLUG}-assets
+            - coscmd upload -rs dist/ /${BITBUCKET_REPO_SLUG}-assets/${BITBUCKET_BUILD_NUMBER}
+            - echo "done"
+      - step:
+          name: deploy-test
+          image: harbor.zlibs.com/bitnami/kubectl
+          runs-on:
+            - txtestk8s
+          script:
+            - export DEPLOY_FILE_NAME=deployment CI_ENVIRONMENT_SLUG=test K8S_REPLICAS=1 PROJECT_ISP=tx
+            - export auth_url=$(echo $template_url |base64 -d)
+            - git clone ${auth_url}
+            - chmod +x ci-template/v/deploy/deploy
+            - ./ci-template/v/deploy/deploy
+
+      - step:
+          trigger: manual
+          name: deploy-test-service
+          image: harbor.zlibs.com/bitnami/kubectl
+          runs-on:
+            - txtestk8s
+          script:
+            - export  CI_ENVIRONMENT_SLUG=test PROJECT_ISP=tx
+            - export auth_url=$(echo $template_url |base64 -d)
+            - git clone ${auth_url}
+            - chmod +x ci-template/v/deploy/service
+            - ./ci-template/v/deploy/service
+  tags:
+    '*':
+      - step:
+          name: release
+          image: docker
+          runs-on:
+            - txoverseak8s
+          script:
+            - export auth_url=$(echo $template_url |base64 -d) 
+            - export CDN_URL_PREFIX="//${CI_CDN_HOST_PROD}/${BITBUCKET_REPO_SLUG}-assets/${BITBUCKET_BUILD_NUMBER}"
+            - git clone ${auth_url}
+            - chmod +x ci-template/v/build-customize
+            - ./ci-template/v/build-customize
+          artifacts:
+            - dist/**
+      - step:
+          name: cos
+          image: 
+            name: harbor.zlibs.com/library/library-cos-uploader:v2.0.0
+            username: $CI_REGISTRY_USERNAME
+            password: $CI_REGISTRY_PASSWORD
+          runs-on:
+            - txtestk8s
+          script:
+            - export  CI_COS_REGION=${CI_COS_REGION_PROD}  CI_COS_BUCKET=${CI_COS_BUCKET_PROD}  CI_CDN_HOST=${CI_CDN_HOST_PROD}
+            - export  BITBUCKET_PROJECT_NAME=$(echo $BITBUCKET_PROJECT_KEY | tr '[A-Z]' '[a-z]'|cut -d '_' -f 1)  PROJECT_GROUP=$(echo $BITBUCKET_PROJECT_KEY | tr '[A-Z]' '[a-z]'|cut -d '_' -f 2)
+            - export  kube_project_namespace=ci-${BITBUCKET_PROJECT_NAME}-${CI_ENVIRONMENT_SLUG}   CI_PROJECT_PATH_SLUG=${BITBUCKET_PROJECT_NAME}-${PROJECT_GROUP}-${BITBUCKET_REPO_SLUG}  CI_PIPELINE_ID=${BITBUCKET_BUILD_NUMBER}
+            - test -z "${CI_PROJECT_PATH_SLUG_OTHER}" && export  CI_PROJECT_PATH_SLUG_OTHER="${CI_PROJECT_PATH_SLUG}"
+            - cos-uploader ${BITBUCKET_REPO_SLUG}-assets
+            - coscmd upload -rs dist/ /${BITBUCKET_REPO_SLUG}-assets/${BITBUCKET_BUILD_NUMBER}
+            - echo "done"
+
+      - step:
+          name: deploy-staging
+          image: harbor.zlibs.com/bitnami/kubectl
+          runs-on:
+            - txhkk8s
+          script:
+            - export DEPLOY_FILE_NAME=deployment CI_ENVIRONMENT_SLUG=staging K8S_REPLICAS=1  PROJECT_ISP=tx
+            - export auth_url=$(echo $template_url |base64 -d)
+            - git clone ${auth_url}
+            - chmod +x ci-template/v/deploy/deploy_overs
+            - ./ci-template/v/deploy/deploy_overs
+      
+      - step:
+          name: deploy-staging-service
+          image: harbor.zlibs.com/bitnami/kubectl
+          runs-on:
+            - txhkk8s
+          script:
+            - export  CI_ENVIRONMENT_SLUG=staging PROJECT_ISP=tx
+            - export auth_url=$(echo $template_url |base64 -d)
+            - git clone ${auth_url}
+            - chmod +x ci-template/v/deploy/service
+            - ./ci-template/v/deploy/service
+
+      - step:
+          trigger: manual
+          name: deploy-prod
+          image: harbor.zlibs.com/bitnami/kubectl
+          runs-on:
+            - txhkk8s
+          script:
+            - export DEPLOY_FILE_NAME=deployment CI_ENVIRONMENT_SLUG=production K8S_REPLICAS=1  PROJECT_ISP=tx
+            - export auth_url=$(echo $template_url |base64 -d)
+            - git clone ${auth_url}
+            - chmod +x ci-template/v/deploy/deploy_overs
+            - ./ci-template/v/deploy/deploy_overs
+
+      - step:
+          trigger: manual
+          name: deploy-prod-service
+          image: harbor.zlibs.com/bitnami/kubectl
+          runs-on:
+            - txhkk8s
+          script:
+            - export  CI_ENVIRONMENT_SLUG=production PROJECT_ISP=tx
+            - export auth_url=$(echo $template_url |base64 -d)
+            - git clone ${auth_url}
+            - chmod +x ci-template/v/deploy/service
+            - ./ci-template/v/deploy/service

@@ -1,0 +1,116 @@
+// CSS变量定义文件
+:root {
+  // ==================== 主题色系 ====================
+  --el-color-primary: #597EF7!important;
+  --el-color-primary-secondary: #2F54EB !important;
+  --el-menu-bg-color: transparent!important;
+  --el-menu-active-color: #fff!important;
+  --el-menu-item-height: 40px!important;
+  --el-menu-hover-bg-color: #85A5FF!important;
+  --el-color-primary-light-3: #85A5FF!important;
+  --el-color-primary-light-5: #597EF7!important;
+  --el-color-primary-light-9: #F0F5FF !important;
+
+  
+  --el-color-secondary: #765EF6!important;
+  --el-color-secondary-light-3: #9885FF!important;
+
+  // ====================  ====================
+  --el-color-success: #52C41A!important;
+  --el-color-success-light-8: #F6FFED!important;
+  --el-color-success-light-9: #F6FFED !important;
+  --el-color-warning: #FA8C16!important;
+  --el-color-warning-light-8: #FFF7E6!important;
+  --el-color-warning-light-9: #FFF7E6 !important;
+  --el-color-danger: #F5222D!important;
+  --el-color-danger-light-8: #FFF1F0!important;
+  --el-color-danger-light-9: #FFF1F0 !important;
+  --el-color-info: #252525!important;
+  --el-color-info-light-8: #FAFAFA!important;
+  --el-color-info-light-9: #FAFAFA !important;
+
+  --el-dialog-border-radius: 8px!important;
+  --el-dialog-title-font-size: 20px!important;
+
+
+
+  --el-border-radius-small: 2px !important;
+  --el-border-radius-base: 4px!important;
+  --el-border-radius-medium: 8px!important;
+  --el-border-radius-large: 12px!important;
+  --el-border-radius-circle: 50%!important;
+  --el-border-radius-round: 290px!important;
+
+
+  --el-box-shadow-light: 0 4px 20px 0 #F2F2FF!important;
+  --el-box-shadow-dark: 0 4px 20px 0 #e6e6e6!important;
+  --el-border-color-light: #F2F2FF!important;
+  --el-border-color-lighter: #E5E7EB!important;
+  --el-divider-color: #F0F0F0!important;
+  
+  --el-text-color-primary: rgba(0, 0, 0, 0.85)!important;
+  --el-text-color-regular: #606266!important;
+  --el-text-color-secondary: rgba(0, 0, 0, 0.45)!important;
+  --el-text-color-secondary-light: #BFBFBF!important;
+  --el-text-color-placeholder: #A8ABB2!important;
+  --el-text-color-disabled: #c0c4cc!important;
+  --el-text-color-description: #8C8C8C !important;
+  --el-color-label: #8C8C8C !important;
+  --el-color-description: #8C8C8C!important;
+
+  --el-font-size-extra-large: 20px!important;
+  --el-font-size-large: 18px!important;
+  --el-font-size-medium: 16px!important;
+  --el-font-size-base: 14px!important;
+  --el-font-size-small: 12px!important;
+  --el-font-size-extra-small: 10px!important;
+
+  --el-font-weight-primary: 500!important;
+  --el-font-weight-regular: 400!important;
+  --el-font-weight-bold: 600!important;
+
+  --el-padding-base: 12px!important;
+  --el-padding-medium: 16px!important;
+  --el-padding-large: 22px!important;
+  --el-padding-xlarge: 34px!important;
+  --el-padding-xxlarge: 40px!important;
+
+  --el-gap-small: 4px!important;
+  --el-gap-base: 8px!important;
+  --el-gap-medium: 12px!important;
+  --el-gap-large: 24px!important;
+  --el-gap-xlarge: 32px!important;
+
+  --el-size-extra-small: 16px!important;
+  --el-size-small: 22px!important;
+  --el-size-medium: 48px!important;
+
+  --el-line-height-base: 1.5!important;
+
+  --el-sidebar-width: 210px!important;
+  --el-sidebar-bg-color: #F1F2FF!important;
+  --el-sidebar-box-shadow: -1px 0 0 0 #F0F0F0 inset!important;
+  --el-sidebar-border-color-light: #E3E3F0!important;
+
+  --el-logo-width: 90px!important;
+
+  --el-copy-btn-bg-color: #434343!important;
+  --el-copy-btn-border-color: #434343!important;
+
+  --el-body-bg-color: #FBFCFF!important;
+  --el-upload-bg-color: #F8FBFF!important;
+  --el-selected-bg-color: #fafafa!important;
+
+
+  // tabs
+  --el-tabs-header-gap: 16px!important;
+  --el-tabs-header-height-large: 50px!important;
+
+
+  --el-input-height-medium: 40px!important;
+  --el-form-max-width: 568px!important;
+
+
+  --el-text-readonly-color: #434343!important;
+
+}
